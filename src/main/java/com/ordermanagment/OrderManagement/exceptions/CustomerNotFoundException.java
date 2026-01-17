@@ -1,0 +1,11 @@
+package com.ordermanagment.OrderManagement.exceptions;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class CustomerNotFoundException extends RuntimeException{
+    public CustomerNotFoundException(Long customer_id){
+        super("Customer not found with id: " + customer_id);
+    }
+}
