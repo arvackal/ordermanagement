@@ -1,7 +1,7 @@
 package com.ordermanagment.OrderManagement.service;
 
 import com.ordermanagment.OrderManagement.dto.CreateGroceryItemRequest;
-import com.ordermanagment.OrderManagement.dto.UpdateGroceryRequest;
+import com.ordermanagment.OrderManagement.dto.UpdateGroceryItemRequest;
 import com.ordermanagment.OrderManagement.entity.GroceryItem;
 import com.ordermanagment.OrderManagement.exceptions.GroceryItemNotFoundException;
 import com.ordermanagment.OrderManagement.repository.GroceryItemRepository;
@@ -15,11 +15,7 @@ import java.util.List;
 public class GroceryItemServiceImpl implements GroceryItemService{
 
     @Autowired
-    private final GroceryItemRepository groceryItemRepository;
-
-    public GroceryItemServiceImpl(GroceryItemRepository groceryItemRepository) {
-        this.groceryItemRepository = groceryItemRepository;
-    }
+    private GroceryItemRepository groceryItemRepository;
 
     @Override
     public GroceryItem createGroceryItem(CreateGroceryItemRequest request) {
@@ -56,9 +52,9 @@ public class GroceryItemServiceImpl implements GroceryItemService{
 
     @Transactional
     @Override
-    public GroceryItem updateGroceryItem(UpdateGroceryRequest request) {
-        GroceryItem groceryItem = groceryItemRepository.findById(request.getId())
-                .orElseThrow(() -> new GroceryItemNotFoundException(request.getId()));
+    public GroceryItem updateGroceryItem(Long id, UpdateGroceryItemRequest request) {
+        GroceryItem groceryItem = groceryItemRepository.findById(id)
+                .orElseThrow(() -> new GroceryItemNotFoundException(id));
 
         groceryItem.setName(request.getName());
         groceryItem.setQuantity(request.getQuantity());

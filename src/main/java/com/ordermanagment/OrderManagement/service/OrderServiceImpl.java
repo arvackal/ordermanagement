@@ -7,28 +7,25 @@ import com.ordermanagment.OrderManagement.entity.GroceryItem;
 import com.ordermanagment.OrderManagement.entity.Order;
 import com.ordermanagment.OrderManagement.entity.OrderItem;
 import com.ordermanagment.OrderManagement.enums.OrderStatus;
-import com.ordermanagment.OrderManagement.exceptions.CancelNotPossibleException;
-import com.ordermanagment.OrderManagement.exceptions.CustomerNotFoundException;
-import com.ordermanagment.OrderManagement.exceptions.GroceryItemNotFoundException;
-import com.ordermanagment.OrderManagement.exceptions.OrderNotFoundException;
+import com.ordermanagment.OrderManagement.exceptions.*;
 import com.ordermanagment.OrderManagement.repository.OrderRespository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class OrderServiceImpl implements OrderService{
-    private final CustomerService customerService;
-    private final GroceryItemService groceryItemService;
-    private final OrderRespository orderRespository;
+    @Autowired
+    private CustomerService customerService;
 
-    public OrderServiceImpl(CustomerService customerService, OrderItemService orderItemService,
-                            GroceryItemService groceryItemService, OrderRespository orderRespository) {
-        this.customerService = customerService;
-        this.groceryItemService = groceryItemService;
-        this.orderRespository = orderRespository;
-    }
+    @Autowired
+    private GroceryItemService groceryItemService;
+
+    @Autowired
+    private OrderRespository orderRespository;
 
     @Override
     public Order createOrder(CreateOrderRequest orderRequest) {
@@ -70,7 +67,7 @@ public class OrderServiceImpl implements OrderService{
 
         order.setTotalPrice(totalPrice);
         order.setOrderStatus(OrderStatus.PLACED);
-
+        order.setPlacedOn(LocalDate.now());
         orderRespository.save(order);
         return order;
     }
@@ -102,12 +99,10 @@ public class OrderServiceImpl implements OrderService{
     private Boolean checkCancelPossible(Order order){
         OrderStatus currentStatus = order.getOrderStatus();
 
-        if(currentStatus == OrderStatus.CONFIRMED || currentStatus == OrderStatus.PLACED)
-            return true;
-
-        return false;
+        return currentStatus == OrderStatus.CONFIRMED || currentStatus == OrderStatus.PLACED;
     }
 
+    @Transactional
     @Override
     public void cancelOrder(Long id) {
         Order order = orderRespository.findById(id)
@@ -116,7 +111,9 @@ public class OrderServiceImpl implements OrderService{
         Boolean isPossible = checkCancelPossible(order);
 
         if(isPossible){
-            updateOrderStatus(id, order.getOrderStatus());
+            System.out.println("cancelling");
+            updateOrderStatus(id, "CANCELLED");
+
         }else{
             throw new CancelNotPossibleException("Order is already Shipped/Cancelled/Delivered");
         }
@@ -124,12 +121,22 @@ public class OrderServiceImpl implements OrderService{
 
     @Transactional
     @Override
-    public Order updateOrderStatus(Long id, OrderStatus orderStatus) {
+    public Order updateOrderStatus(Long id, String orderStatusString) {
         Order order = orderRespository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
 
-        order.setOrderStatus(orderStatus);
 
-        return order;
+        if(orderStatusString == null || orderStatusString.trim().isBlank())
+            throw new UnknownOrderStatusFoundException(orderStatusString);
+
+        try{
+            OrderStatus orderStatus = OrderStatus.valueOf(orderStatusString.toUpperCase());
+            order.setOrderStatus(orderStatus);
+
+            return order;
+        } catch (IllegalArgumentException e) {
+            throw new UnknownOrderStatusFoundException(orderStatusString);
+        }
+
     }
 }

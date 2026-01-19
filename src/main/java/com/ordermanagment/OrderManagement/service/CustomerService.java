@@ -10,6 +10,6 @@ public interface CustomerService {
     public Customer createCustomer(CreateCustomerRequest createCustomerRequest);
     public Customer getCustomerbyId(Long id);
     public List<Customer> getAllCustomers();
-    public void deleteUser(Long id);
-    public Customer updateCustomer(UpdateCustomerRequest updateCustomerRequest);
+    public void deleteCustomer(Long id);
+    public Customer updateCustomer(Long id, UpdateCustomerRequest updateCustomerRequest);
 }

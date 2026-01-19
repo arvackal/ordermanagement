@@ -15,11 +15,7 @@ import java.util.List;
 public class CustomerServiceImpl implements CustomerService{
 
     @Autowired
-    private final CustomerRepository customerRepository;
-
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }
+    private CustomerRepository customerRepository;
 
     @Override
     public Customer createCustomer(CreateCustomerRequest request) {
@@ -47,7 +43,7 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteCustomer(Long id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException(id));
 
@@ -56,9 +52,9 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Transactional
     @Override
-    public Customer updateCustomer(UpdateCustomerRequest request) {
-        Customer customer = customerRepository.findById(request.getId())
-                .orElseThrow(() -> new CustomerNotFoundException(request.getId()));
+    public Customer updateCustomer(Long id, UpdateCustomerRequest request) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException(id));
 
         customer.setName(request.getName());
         customer.setEmail(request.getEmail());

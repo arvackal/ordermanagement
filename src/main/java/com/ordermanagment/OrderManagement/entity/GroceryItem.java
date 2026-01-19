@@ -1,9 +1,11 @@
 package com.ordermanagment.OrderManagement.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -16,4 +18,13 @@ public class GroceryItem {
     private String category;
     private Double price;
     private Long quantity;
+
+    @OneToMany(
+            mappedBy = "groceryItem",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonBackReference
+    private List<OrderItem> orderItems = new ArrayList<>();
+
 }

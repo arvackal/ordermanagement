@@ -15,15 +15,10 @@ import java.util.List;
 public class OrderItemServiceImpl implements OrderItemService{
 
     @Autowired
-    private final OrderItemRepository orderItemRespository;
+    private OrderItemRepository orderItemRespository;
 
     @Autowired
-    private final OrderService orderService;
-
-    public OrderItemServiceImpl(OrderItemRepository orderItemRespository, OrderService orderService) {
-        this.orderItemRespository = orderItemRespository;
-        this.orderService = orderService;
-    }
+    private OrderService orderService;
 
     @Override
     public OrderItem findOrderItemById(Long id) {

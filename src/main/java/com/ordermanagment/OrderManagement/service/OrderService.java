@@ -12,5 +12,5 @@ public interface OrderService {
     public List<Order> getOrderByCustomerId(Long customerId);
     public List<Order> getAllOrders();
     public void cancelOrder(Long id);
-    public Order updateOrderStatus(Long id, OrderStatus orderStatus);
+    public Order updateOrderStatus(Long id, String orderStatus);
 }

@@ -1,5 +1,7 @@
 package com.ordermanagment.OrderManagement.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ordermanagment.OrderManagement.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -22,6 +24,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
+    @JsonBackReference
     private Customer customer;
 
     @OneToMany(
@@ -29,6 +32,7 @@ public class Order {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @JsonManagedReference
     private List<OrderItem> orderItems = new ArrayList<>();
 
 }
